@@ -1,20 +1,23 @@
-name: Build
-on: [push, workflow_dispatch]
+name: Build mod
+on:
+  push:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: unzip -o *.zip -d proj
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - run: |
-          unzip -q eclipsemod-project.zip
-          cd eclipsemod
-          chmod +x gradlew
-          ./gradlew build --no-daemon
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.1.1
+      - run: gradle build
+        working-directory: proj
       - uses: actions/upload-artifact@v4
         with:
-          name: eclipsemod-jar
-          path: eclipsemod/build/libs/*.jar
+          name: CosmicRift-jar
+          path: proj/build/libs/*.jar
